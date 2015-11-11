@@ -1,0 +1,4 @@
+[submodule "Hebcal/src/main/jni/hebcal"]
+	path = Hebcal/src/main/jni/hebcal
+	url = git@github.com:aperomsik/hebcal.git
+	branch = more_changes_for_android
