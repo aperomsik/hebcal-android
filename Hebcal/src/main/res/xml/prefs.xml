@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+            android:title="@string/title_hebcal_prefs_category">
+            
+           <ListPreference 
+               android:key="Location"
+               android:title="@string/title_Location" />
+        <CheckBoxPreference
+                android:key="showDaf"
+                android:title="@string/title_showDaf" />
+        <ListPreference
+                android:key="Dialect"
+                android:title="@string/title_dialect" android:entries="@array/Dialects" 
+                android:entryValues="@array/DialectValues" />
+            
+           <CheckBoxPreference
+                android:key="showSunrise"
+                android:title="@string/title_showSunrise" />
+           <CheckBoxPreference
+                android:key="showSunset"
+                android:title="@string/title_showSunset" />
+            
+    </PreferenceCategory>
+                
+</PreferenceScreen>

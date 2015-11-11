@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="Calendars">Calendars</string>
+        <string name="Prefs">Preferences</string>
+    <string name="hello">Hello World, Hebcal!</string>
+    <string name="app_name">Hebcal</string>
+<string name="dateDisplay_text">11-12-2010</string>
+<string name="pickDate_text">Choose Date...</string>
+<string name="title_showDaf">Daf Yomi</string>
+<string name="title_showSunrise">Sunrise</string>
+<string name="title_showSunset">Sunset</string>
+<string name="title_dialect">Hebcal Dialect</string>
+<string name="title_zmanim_prefs_category">Zemanim</string>
+<string name="title_Location">Location</string>
+<string name="title_hebcal_prefs_category">Hebcal Settings</string>
+<string name="preferences_title">Preferences</string>
+<string-array name="ModeStrings"><item>Zemanim for</item>
+<item>Week of</item>
+<item>Two weeks starting</item>
+<item>Four weeks starting</item>
+</string-array>
+<integer-array name="ModeValues">
+<item>1</item>
+<item>7</item>
+<item>14</item>
+<item>28</item>
+</integer-array>
+<string-array name="Dialects"><item>Ashkenazis</item>
+<item>Sefaradit</item>
+<item>עברית</item>
+</string-array>
+<string-array name="DialectValues"><item>a</item>
+<item>s</item>
+<item>h</item>
+</string-array>
+</resources>
