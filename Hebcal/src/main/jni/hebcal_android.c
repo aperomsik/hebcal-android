@@ -48,6 +48,8 @@ static short hcMonth, hcDay, hcYear;
 static date_t greg_day;
 static int date_set = TRUE;
 
+extern int hca_week_zemanim = 0;
+
 // printf redirector
 int hca_printf(const char *fmt, ...)
 {
@@ -95,19 +97,28 @@ void hca_set_date (int mm, int dd, int yy)
 // redo the text field based on greg_day
 char *hca_compute(int num_days)
 {
+    int zemanim;
    static int here_yet = 0;
    if (!here_yet)
    {
      //      hcp_apply_prefs();
       here_yet = 1;
-      localize_to_city("Pawtucket RI");
+      localize_to_city("Pawtucket");
       ashkenazis_sw = 1;
       // sunsetAlways_sw = 1;
       // sunriseAlways_sw = 1;
       // dafYomi_sw = 1;
    }
    hca_printf_setup();
-   if (hebcal_for_range(greg_day, num_days))
+
+    if (num_days == 1)
+        zemanim = (ZMAN_SUNRISE | ZMAN_SZKS | ZMAN_TEFILAH | ZMAN_CHATZOT |
+                           ZMAN_MINCHA_GEDOLA | ZMAN_MINCHA_KETANA |
+                           ZMAN_PLAG_HAMINCHA | ZMAN_SUNSET | ZMAN_TZAIT_42);
+    else
+        zemanim = hca_week_zemanim;
+
+   if (hebcal_for_range(greg_day, num_days, zemanim))
    {
      //     return "silly stuff";
      return printf_data;

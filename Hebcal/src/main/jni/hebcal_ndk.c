@@ -1,5 +1,6 @@
 #include <net_peromsik_hebcal_HebcalNativeLoader.h>
 #include <hebcal.h>
+#include <hebcal_android.h>
 
 extern void hebcal_set_date(int,int,int);
 
@@ -24,7 +25,7 @@ JNIEXPORT void JNICALL Java_net_peromsik_hebcal_HebcalNativeLoader_hebcal_1range
   // and fill them in.
   for (i = 0; i < num_events; i ++)
     {
-      char *desc = events[i].desc;
+      unsigned char *desc = events[i].desc;
       int hours = events[i].time.hours;
       if (events[i].time.pm)
         hours += 12;
@@ -70,9 +71,11 @@ JNIEXPORT void JNICALL Java_net_peromsik_hebcal_HebcalNativeLoader_hebcal_1range
 JNIEXPORT void JNICALL Java_net_peromsik_hebcal_HebcalNativeLoader_hebcal_1set_1prefs (JNIEnv *env, jobject jobj, jboolean daf, jboolean sunrise, jboolean sunset) {
 
   dafYomi_sw = (int)daf;
-  sunriseAlways_sw = (int)sunrise;
-  sunsetAlways_sw = (int)sunset;
-  
+  hca_week_zemanim = 0;
+  if (sunrise)
+    hca_week_zemanim |= ZMAN_SUNRISE;
+  if (sunset)
+    hca_week_zemanim |= ZMAN_SUNSET;
 }
 
 

@@ -465,7 +465,7 @@ public class Hebcal extends ActionBarActivity {
     	int num_cal, num_hc, i_cal, i_hc;     
         
     	num_cal = cal_events.length;
-    	num_hc = hc_events.length;
+    	num_hc = (hc_events == null) ? 0 : hc_events.length;
     	long next_hc;
     	long next_cal;
     	long future = 3000 * DateUtils.YEAR_IN_MILLIS;

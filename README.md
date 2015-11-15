@@ -18,6 +18,5 @@ missing SDK versions and/or wrong tool versions, but it should offer to fix thos
 When it's done downloading, the project might actually build.
 
 TODO:
-  - Rebase my hebcal changes against current upstream hebcal
   - Try to convince upstream to accept my hebcal changes
   - Then ask if the hebcal team might want to take ownership of this app.
