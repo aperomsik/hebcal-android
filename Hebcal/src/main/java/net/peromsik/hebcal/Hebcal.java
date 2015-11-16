@@ -3,13 +3,16 @@ package net.peromsik.hebcal;
 
 import java.util.Calendar;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.preference.PreferenceManager;
 
 
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.PopupMenu;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -55,6 +58,7 @@ public class Hebcal extends ActionBarActivity {
     private TableLayout mHebcalTable;
     private Button mDateButton;
     private DrawerLayout mDrawerLayout;
+	private ActionBarDrawerToggle mDrawerToggle;
 
     CalEventLoader cel;
     HebcalEventLoader hevl = new HebcalEventLoader();
@@ -208,20 +212,35 @@ public class Hebcal extends ActionBarActivity {
     	mode = prefs.getInt("range_mode", 0);
     	onRangeModeChanged(mode, false);
 
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		Toolbar t = (Toolbar) findViewById(R.id.toolbar);
 		if (t != null) {
 			setSupportActionBar(t);
-			t.setNavigationIcon(android.support.v7.appcompat.R.drawable.abc_btn_radio_material); // FIXME
+			ActionBar ab = getSupportActionBar();
 			t.setNavigationOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					mDrawerLayout.openDrawer(GravityCompat.START);
 				}
 			});
-			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+			ab.setDisplayHomeAsUpEnabled(true);
+
+			mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.app_name, R.string.app_name) {
+
+				public void onDrawerClosed(View view) {
+					supportInvalidateOptionsMenu();
+					//drawerOpened = false;
+				}
+
+				public void onDrawerOpened(View drawerView) {
+					supportInvalidateOptionsMenu();
+					//drawerOpened = true;
+				}
+			};
+			mDrawerToggle.setDrawerIndicatorEnabled(true);
+			mDrawerLayout.setDrawerListener(mDrawerToggle);
 		}
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
         view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -261,7 +280,19 @@ public class Hebcal extends ActionBarActivity {
 			}
 		});
     }
-    
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		mDrawerToggle.syncState();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		mDrawerToggle.onConfigurationChanged(newConfig);
+	}
+
     public void onDestroy() {
     	hevl.cleanup();
     	cel.cleanup();
