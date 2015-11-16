@@ -13,11 +13,15 @@
 <string name="title_zmanim_prefs_category">Zemanim</string>
 <string name="title_Location">Location</string>
 <string name="title_hebcal_prefs_category">Hebcal Settings</string>
+<string name="title_nav_Mode0">Zemanim</string>
+<string name="title_nav_Mode1">Week</string>
+<string name="title_nav_Mode2">Two Weeks</string>
+<string name="title_nav_Mode3">Four Weeks</string>
 <string name="preferences_title">Preferences</string>
 <string-array name="ModeStrings"><item>Zemanim for</item>
 <item>Week of</item>
-<item>Two weeks starting</item>
-<item>Four weeks starting</item>
+<item>Two weeks</item>
+<item>Four weeks</item>
 </string-array>
 <integer-array name="ModeValues">
 <item>1</item>

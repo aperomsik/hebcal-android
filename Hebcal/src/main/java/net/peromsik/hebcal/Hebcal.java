@@ -3,15 +3,22 @@ package net.peromsik.hebcal;
 
 import java.util.Calendar;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.preference.PreferenceManager;
 
 
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.PopupMenu;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -45,11 +52,13 @@ public class Hebcal extends ActionBarActivity {
     private int mDay;
 
     private Boolean as_table = true;
-    
-    private Button mModeView;
+
     private TextView mHebcalText;
     private TableLayout mHebcalTable;
-    private Button mDateButton; 
+    private Button mDateButton;
+    private DrawerLayout mDrawerLayout;
+	private ActionBarDrawerToggle mDrawerToggle;
+
     CalEventLoader cel;
     HebcalEventLoader hevl = new HebcalEventLoader();
     
@@ -58,7 +67,6 @@ public class Hebcal extends ActionBarActivity {
     private int mode = 0;
     private int num_days = 1;
     String mPrevDate = null;
-    PopupMenu mModePopup;
         
     private class HebcalEventLoader 
         implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -153,7 +161,9 @@ public class Hebcal extends ActionBarActivity {
     	String [] modeStrings = res.getStringArray(R.array.ModeStrings);
     	mode = pos;
     	num_days = modeValues[mode];
-    	mModeView.setText(modeStrings[pos]);
+		ActionBar ab = getSupportActionBar();
+		if (ab != null)
+		  	ab.setSubtitle(modeStrings[pos]);
     	if (display)
           updateDisplay();
     }
@@ -174,40 +184,82 @@ public class Hebcal extends ActionBarActivity {
         mDateButton = (Button) findViewById(R.id.pickDate);
 
         mHebcalText.setMovementMethod(new ScrollingMovementMethod());
-    
-        mModeView = (Button) findViewById(R.id.Range);
-        mModePopup = new PopupMenu(this, mModeView);
-        mModePopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-			public boolean onMenuItemClick(MenuItem item) {
-				int id = item.getItemId();
-				onRangeModeChanged(id, true);
-				return true;
-			}
-	
-		});
-        Menu m = mModePopup.getMenu();
-        String [] modeStrings = getResources().getStringArray(R.array.ModeStrings);
-        for (int i = 0; i < modeStrings.length; i ++) {
-        	m.add(Menu.NONE, i, i, modeStrings[i]);
-        }
-
-        mModeView.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mModePopup.show();
-            }
-        });   
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences((Context)Hebcal.this); 	
     	mode = prefs.getInt("range_mode", 0);
-    	onRangeModeChanged(mode, false);
-        
-        //Spinner spinner = (Spinner) findViewById(R.id.ModeSpinner);
-        //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-        //        this, R.array.ModeStrings, android.R.layout.simple_spinner_item);
-        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //spinner.setAdapter(adapter);
-        //spinner.setOnItemSelectedListener(new HebcalModeOnItemSelectedListener());
+
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		Toolbar t = (Toolbar) findViewById(R.id.toolbar);
+		if (t != null) {
+			setSupportActionBar(t);
+			ActionBar ab = getSupportActionBar();
+			t.setNavigationOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					mDrawerLayout.openDrawer(GravityCompat.START);
+				}
+			});
+			ab.setDisplayHomeAsUpEnabled(true);
+
+			mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.app_name, R.string.app_name) {
+
+				public void onDrawerClosed(View view) {
+					supportInvalidateOptionsMenu();
+					//drawerOpened = false;
+				}
+
+				public void onDrawerOpened(View drawerView) {
+					supportInvalidateOptionsMenu();
+					//drawerOpened = true;
+				}
+			};
+			mDrawerToggle.setDrawerIndicatorEnabled(true);
+			mDrawerLayout.setDrawerListener(mDrawerToggle);
+		}
+
+		onRangeModeChanged(mode, false);
+
+		NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
+        view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+			@Override
+			public boolean onNavigationItemSelected(MenuItem menuItem) {
+				Intent intent;
+				mDrawerLayout.closeDrawers();
+
+				switch (menuItem.getItemId()) {
+					case R.id.CalButton:
+						intent = new Intent(Hebcal.this, CalendarSelectorActivity.class);
+						startActivity(intent);
+						break;
+
+					case R.id.PrefsButton:
+						intent = new Intent(Hebcal.this, HebcalPrefsActivity.class);
+						startActivity(intent);
+						break;
+
+					case R.id.Mode0:
+						mode = 0;
+						onRangeModeChanged(mode, true);
+						break;
+
+					case R.id.Mode1:
+						mode = 1;
+						onRangeModeChanged(mode, true);
+						break;
+
+					case R.id.Mode2:
+						mode = 2;
+						onRangeModeChanged(mode, true);
+						break;
+
+					case R.id.Mode3:
+						mode = 3;
+						onRangeModeChanged(mode, true);
+						break;
+				}
+				return true;
+			}
+		});
         
         gotoToday();
         
@@ -225,7 +277,19 @@ public class Hebcal extends ActionBarActivity {
 			}
 		});
     }
-    
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		mDrawerToggle.syncState();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		mDrawerToggle.onConfigurationChanged(newConfig);
+	}
+
     public void onDestroy() {
     	hevl.cleanup();
     	cel.cleanup();
@@ -273,16 +337,6 @@ public class Hebcal extends ActionBarActivity {
     	Intent intent;
         // Handle item selection
         switch (item.getItemId()) {
-        case R.id.CalButton:
-            //chooseCalendars();				
-        	//Toast.makeText(getApplicationContext(), "No calendar selector yet...", Toast.LENGTH_SHORT).show();
-        	intent = new Intent(this, CalendarSelectorActivity.class);
-            startActivity(intent);
-            return true;
-        case R.id.PrefsButton:
-            intent = new Intent(this, HebcalPrefsActivity.class);
-            startActivity(intent);
-            return true;  
         case R.id.AddApptButton:
             addAppt();
             return true;
@@ -439,6 +493,7 @@ public class Hebcal extends ActionBarActivity {
          	addEventTableRow(event, color, fromCal); 
          	// addEventTableRow(event);
          	// addEventTableRow(event);
+
          	// addEventTableRow(event);
 
     	}
