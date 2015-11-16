@@ -164,6 +164,9 @@ public class Hebcal extends ActionBarActivity {
     	mode = pos;
     	num_days = modeValues[mode];
     	mModeView.setText(modeStrings[pos]);
+		ActionBar ab = getSupportActionBar();
+		if (ab != null)
+		  	ab.setSubtitle(modeStrings[pos]);
     	if (display)
           updateDisplay();
     }
@@ -258,6 +261,26 @@ public class Hebcal extends ActionBarActivity {
 					case R.id.PrefsButton:
 						intent = new Intent(Hebcal.this, HebcalPrefsActivity.class);
 						startActivity(intent);
+						break;
+
+					case R.id.Mode0:
+						mode = 0;
+						onRangeModeChanged(mode, false);
+						break;
+
+					case R.id.Mode1:
+						mode = 1;
+						onRangeModeChanged(mode, false);
+						break;
+
+					case R.id.Mode2:
+						mode = 2;
+						onRangeModeChanged(mode, false);
+						break;
+
+					case R.id.Mode3:
+						mode = 3;
+						onRangeModeChanged(mode, false);
 						break;
 				}
 				return true;

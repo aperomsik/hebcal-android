@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:hebcal="http://schemas.android.com/apk/res-auto">
-<group android:checkableBehavior="single">
+<group android:id="@+id/Mode" android:checkableBehavior="single">
+    <item android:id="@+id/Mode0" android:title="@string/title_nav_Mode0" />
+    <item android:id="@+id/Mode1" android:title="@string/title_nav_Mode1" />
+    <item android:id="@+id/Mode2" android:title="@string/title_nav_Mode2" />
+    <item android:id="@+id/Mode3" android:title="@string/title_nav_Mode3" />
+</group>
+    <group android:checkableBehavior="single">
     <item android:id="@+id/CalButton" android:icon="@android:drawable/ic_menu_my_calendar" android:title="@string/Calendars"/>
     <item android:id="@+id/PrefsButton" android:icon="@android:drawable/ic_menu_preferences" android:title="@string/Prefs"/>
 </group>
