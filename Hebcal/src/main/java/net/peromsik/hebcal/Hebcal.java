@@ -6,12 +6,16 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.PopupMenu;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -49,7 +53,9 @@ public class Hebcal extends ActionBarActivity {
     private Button mModeView;
     private TextView mHebcalText;
     private TableLayout mHebcalTable;
-    private Button mDateButton; 
+    private Button mDateButton;
+    private DrawerLayout mDrawerLayout;
+
     CalEventLoader cel;
     HebcalEventLoader hevl = new HebcalEventLoader();
     
@@ -184,7 +190,7 @@ public class Hebcal extends ActionBarActivity {
 				onRangeModeChanged(id, true);
 				return true;
 			}
-	
+
 		});
         Menu m = mModePopup.getMenu();
         String [] modeStrings = getResources().getStringArray(R.array.ModeStrings);
@@ -201,13 +207,43 @@ public class Hebcal extends ActionBarActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences((Context)Hebcal.this); 	
     	mode = prefs.getInt("range_mode", 0);
     	onRangeModeChanged(mode, false);
-        
-        //Spinner spinner = (Spinner) findViewById(R.id.ModeSpinner);
-        //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-        //        this, R.array.ModeStrings, android.R.layout.simple_spinner_item);
-        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //spinner.setAdapter(adapter);
-        //spinner.setOnItemSelectedListener(new HebcalModeOnItemSelectedListener());
+
+		Toolbar t = (Toolbar) findViewById(R.id.toolbar);
+		if (t != null) {
+			setSupportActionBar(t);
+			t.setNavigationIcon(android.support.v7.appcompat.R.drawable.abc_btn_radio_material); // FIXME
+			t.setNavigationOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					mDrawerLayout.openDrawer(GravityCompat.START);
+				}
+			});
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
+        view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+			@Override
+			public boolean onNavigationItemSelected(MenuItem menuItem) {
+				Intent intent;
+				mDrawerLayout.closeDrawers();
+
+				switch (menuItem.getItemId()) {
+					case R.id.CalButton:
+						intent = new Intent(Hebcal.this, CalendarSelectorActivity.class);
+						startActivity(intent);
+						break;
+
+					case R.id.PrefsButton:
+						intent = new Intent(Hebcal.this, HebcalPrefsActivity.class);
+						startActivity(intent);
+						break;
+				}
+				return true;
+			}
+		});
         
         gotoToday();
         
@@ -273,16 +309,6 @@ public class Hebcal extends ActionBarActivity {
     	Intent intent;
         // Handle item selection
         switch (item.getItemId()) {
-        case R.id.CalButton:
-            //chooseCalendars();				
-        	//Toast.makeText(getApplicationContext(), "No calendar selector yet...", Toast.LENGTH_SHORT).show();
-        	intent = new Intent(this, CalendarSelectorActivity.class);
-            startActivity(intent);
-            return true;
-        case R.id.PrefsButton:
-            intent = new Intent(this, HebcalPrefsActivity.class);
-            startActivity(intent);
-            return true;  
         case R.id.AddApptButton:
             addAppt();
             return true;
@@ -439,6 +465,7 @@ public class Hebcal extends ActionBarActivity {
          	addEventTableRow(event, color, fromCal); 
          	// addEventTableRow(event);
          	// addEventTableRow(event);
+
          	// addEventTableRow(event);
 
     	}
