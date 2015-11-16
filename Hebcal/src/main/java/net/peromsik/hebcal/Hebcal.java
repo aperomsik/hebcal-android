@@ -52,8 +52,7 @@ public class Hebcal extends ActionBarActivity {
     private int mDay;
 
     private Boolean as_table = true;
-    
-    private Button mModeView;
+
     private TextView mHebcalText;
     private TableLayout mHebcalTable;
     private Button mDateButton;
@@ -68,7 +67,6 @@ public class Hebcal extends ActionBarActivity {
     private int mode = 0;
     private int num_days = 1;
     String mPrevDate = null;
-    PopupMenu mModePopup;
         
     private class HebcalEventLoader 
         implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -163,7 +161,6 @@ public class Hebcal extends ActionBarActivity {
     	String [] modeStrings = res.getStringArray(R.array.ModeStrings);
     	mode = pos;
     	num_days = modeValues[mode];
-    	mModeView.setText(modeStrings[pos]);
 		ActionBar ab = getSupportActionBar();
 		if (ab != null)
 		  	ab.setSubtitle(modeStrings[pos]);
@@ -187,33 +184,9 @@ public class Hebcal extends ActionBarActivity {
         mDateButton = (Button) findViewById(R.id.pickDate);
 
         mHebcalText.setMovementMethod(new ScrollingMovementMethod());
-    
-        mModeView = (Button) findViewById(R.id.Range);
-        mModePopup = new PopupMenu(this, mModeView);
-        mModePopup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-			public boolean onMenuItemClick(MenuItem item) {
-				int id = item.getItemId();
-				onRangeModeChanged(id, true);
-				return true;
-			}
-
-		});
-        Menu m = mModePopup.getMenu();
-        String [] modeStrings = getResources().getStringArray(R.array.ModeStrings);
-        for (int i = 0; i < modeStrings.length; i ++) {
-        	m.add(Menu.NONE, i, i, modeStrings[i]);
-        }
-
-        mModeView.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mModePopup.show();
-            }
-        });   
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences((Context)Hebcal.this); 	
     	mode = prefs.getInt("range_mode", 0);
-    	onRangeModeChanged(mode, false);
 
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		Toolbar t = (Toolbar) findViewById(R.id.toolbar);
@@ -244,8 +217,9 @@ public class Hebcal extends ActionBarActivity {
 			mDrawerLayout.setDrawerListener(mDrawerToggle);
 		}
 
+		onRangeModeChanged(mode, false);
 
-        NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
+		NavigationView view = (NavigationView) findViewById(R.id.navigation_view);
         view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 			@Override
 			public boolean onNavigationItemSelected(MenuItem menuItem) {

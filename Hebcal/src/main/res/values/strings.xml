@@ -20,8 +20,8 @@
 <string name="preferences_title">Preferences</string>
 <string-array name="ModeStrings"><item>Zemanim for</item>
 <item>Week of</item>
-<item>Two weeks starting</item>
-<item>Four weeks starting</item>
+<item>Two weeks</item>
+<item>Four weeks</item>
 </string-array>
 <integer-array name="ModeValues">
 <item>1</item>
