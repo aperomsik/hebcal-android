@@ -51,6 +51,8 @@ public class Hebcal extends ActionBarActivity {
     private int mMonth;
     private int mDay;
 
+	private int modeDays[] = {1,7,14,28};
+
     private Boolean as_table = true;
 
     private TextView mHebcalText;
@@ -129,7 +131,7 @@ public class Hebcal extends ActionBarActivity {
            nl.hebcal_set_date(mMonth+1, mDay, mYear);
            if (need_to_apply_prefs)
         	   applyPrefs();
-           nl.hebcal_range_events(1 + 6*mode);
+           nl.hebcal_range_events(modeDays[mode]);
            return nl.getEvents();
         }
     }
