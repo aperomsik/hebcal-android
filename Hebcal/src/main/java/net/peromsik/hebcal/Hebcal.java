@@ -3,6 +3,7 @@ package net.peromsik.hebcal;
 
 import java.util.Calendar;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.preference.PreferenceManager;
 
@@ -13,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -45,11 +47,13 @@ import android.graphics.Color;
 import android.text.format.DateUtils;
 
 
-public class Hebcal extends ActionBarActivity {
+public class Hebcal extends AppCompatActivity {
     static final int DATE_DIALOG_ID = 0;
     private int mYear;
     private int mMonth;
     private int mDay;
+
+	public static final int CALENDAR_PERMISSION_REQUEST = 1;
 
 	private int modeDays[] = {1,7,14,28};
 
@@ -156,7 +160,17 @@ public class Hebcal extends ActionBarActivity {
         mDay = c.get(Calendar.DAY_OF_MONTH);
         updateDisplay();
     }
-    
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+		switch (requestCode) {
+			case CALENDAR_PERMISSION_REQUEST:
+				if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+					updateDisplay();
+				break;
+		}
+	}
+
     private void onRangeModeChanged(int pos, boolean display) {
     	Resources res = getResources();
     	int [] modeValues = res.getIntArray(R.array.ModeValues);

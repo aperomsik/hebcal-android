@@ -3,16 +3,20 @@
  */
 package net.peromsik.hebcal;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
 class CalEventLoader implements SharedPreferences.OnSharedPreferenceChangeListener {
 	Hebcal hebcal;
@@ -37,7 +41,21 @@ class CalEventLoader implements SharedPreferences.OnSharedPreferenceChangeListen
     }
 
 	static CalendarInfo [] cal_info = null;
-	
+	static boolean asked_permission_this_session = false;
+
+
+	private boolean hasCalendarPermission() {
+		if (ContextCompat.checkSelfPermission(hebcal, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED)
+			return true;
+		if (asked_permission_this_session)
+			return false; // no nagging.
+
+		asked_permission_this_session = true;
+
+		ActivityCompat.requestPermissions(hebcal, new String[] {Manifest.permission.READ_CALENDAR}, Hebcal.CALENDAR_PERMISSION_REQUEST);
+		return false;
+	}
+
 	// public CalEventLoader() {
 	//  super();
 	//}
@@ -111,6 +129,10 @@ class CalEventLoader implements SharedPreferences.OnSharedPreferenceChangeListen
 	}
 	
     public CalendarInfo [] getCalendars () {
+
+		if (!hasCalendarPermission())
+			return null;
+
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences((Context)this.hebcal); 	
     	if (!registered)
     	{
@@ -150,6 +172,10 @@ class CalEventLoader implements SharedPreferences.OnSharedPreferenceChangeListen
 	
 	public ContentValues [] getCalendarEventsInRange(Context context, 
 			long startmillis, long endmillis) {
+
+		if (!hasCalendarPermission())
+			return new ContentValues[0];
+
 		// clue from http://svn.jimblackler.net/jimblackler/trunk/workspace/AndroidReadCalendarExample/src/net/jimblackler/readcalendar/Example.java
 		Uri.Builder uribuilder = getCalendarContentUri("instances/when").buildUpon();
 		ContentUris.appendId(uribuilder, startmillis);
