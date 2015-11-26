@@ -51,7 +51,7 @@ public class HebcalNativeLoader  {
 	//  events[i].put("dtend", t_millis);
 		events[i].put("begin", t_millis);
 		events[i].put("end", t_millis);
-	  events[i].put("allDay", hh == 0 && min == 0);
+	  events[i].put("allDay", hh == 0 && min == 0 ? 1 : 0);
 	  
   }
 

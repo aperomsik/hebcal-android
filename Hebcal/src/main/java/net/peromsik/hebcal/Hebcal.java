@@ -1,6 +1,7 @@
 package net.peromsik.hebcal;
 
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -429,20 +430,12 @@ public class Hebcal extends AppCompatActivity {
     	
     	String text = new String();
     	
-    	Boolean allDay = event.getAsBoolean("allDay");
-    	long time_millis = event.getAsLong("begin");
-    	long end_millis = event.getAsLong("end");
+    	Boolean allDay = event.getAsInteger("allDay") == 1;
+    	long time_millis = adjustedStartTime(event);
 
     	Time t = new Time();
     	t.set(time_millis);
-    	
-    	
-    	if (allDay == false && end_millis - time_millis == DateUtils.DAY_IN_MILLIS) {
-    		allDay = true;
-    		// should recast it to midnight gmt, and should do this when reading from calendar, 
-    		// and should resort.
-    		t.set(time_millis - 1000 * t.gmtoff);
-    	}    	
+
     	if (mode != 0) {
     		text = t.format("%a %d-%b ");
         	tview = new TextView(getApplicationContext());        	
@@ -517,7 +510,36 @@ public class Hebcal extends AppCompatActivity {
     		hebcalTextString += eventString(event);
     	
     }
-    
+
+	private long adjustedStartTime(ContentValues cal_event) {
+		long cal_start = cal_event.getAsLong("begin");
+		boolean all_day = cal_event.getAsInteger("allDay") == 1;
+		if (all_day) {
+			Time t = new Time();
+			t.set(cal_start);
+			cal_start -= 1000 * t.gmtoff;
+		}
+		return cal_start;
+	}
+
+	private boolean eventContinuesTomorrow (ContentValues event) {
+		boolean all_day = event.getAsInteger("allDay") == 1;
+		if (!all_day) {
+			// Some events which are not all-day could also span multiple days, but
+			// I don't want to think about it right now.
+			return false;
+		}
+		long cal_start = event.getAsLong("begin");
+		long cal_end = event.getAsLong("end");
+		cal_start +=  DateUtils.DAY_IN_MILLIS;
+                if (cal_start < cal_end) {
+                    // reset to next day
+                    event.put("begin", cal_start);
+                    return true;
+                }
+                return false;
+	}
+
     private void updateDisplay() {
     	//nl.hebcal_set_date(mMonth+1, mDay, mYear);
     	//String hebcalText = nl.hebcal(mode); 
@@ -533,37 +555,68 @@ public class Hebcal extends AppCompatActivity {
         
     	ContentValues[] cal_events = cel.getCalendarEventsInRange(this, startmillis, endmillis);
         ContentValues[] hc_events = hevl.getEvents();
-    	int num_cal, num_hc, i_cal, i_hc;     
+    	int num_cal, num_hc, i_cal, i_unf, i_hc;
         
     	num_cal = cal_events.length;
     	num_hc = (hc_events == null) ? 0 : hc_events.length;
     	long next_hc;
     	long next_cal;
+		long next_unf;
+
     	long future = 3000 * DateUtils.YEAR_IN_MILLIS;
     	
         hebcalTextString = "";
         mHebcalTable.removeAllViews();
+		ArrayList<Integer> unfinished = new ArrayList<Integer>();
    	        
-    	for (i_cal = 0, i_hc = 0; i_cal < num_cal || i_hc < num_hc; ) {
+    	for (i_cal = 0, i_hc = 0, i_unf = 0; i_cal < num_cal || i_hc < num_hc || unfinished.size() > 0; ) {
+
     		if (i_cal == num_cal || cal_events[i_cal] == null)
     			next_cal = future;
     		else
-    			next_cal = cal_events[i_cal].getAsLong("begin");
+    			next_cal = adjustedStartTime(cal_events[i_cal]);
+
+			if (unfinished.size() == 0)
+				next_unf = future;
+			else {
+				i_unf = unfinished.get(0);
+				next_unf = adjustedStartTime(cal_events[i_unf]);
+			}
+
     		if (i_hc == num_hc)
     			next_hc = future;
     		else
     			next_hc = hc_events[i_hc].getAsLong("begin");
     		
-    		if (next_hc < next_cal) {
+    		if (next_hc < next_cal && next_hc < next_unf) {
     			addEventToDisplay(hc_events[i_hc], 0xff000040, false);
     			i_hc ++;
     		} else {
-    			if (cal_events[i_cal] != null) {    		
-    	    	  int cal_id = cal_events[i_cal].getAsInteger("calendar_id");
-    	    	  int color = cel.getCalColor(cal_id);
-    			  addEventToDisplay(cal_events[i_cal], color, true);
+				int i_event;
+				long ev_start;
+
+				if (next_unf <= next_cal && next_unf != future) {
+					i_event = i_unf;
+					ev_start = next_unf;
+					unfinished.remove(0);
+				} else {
+					i_event = i_cal;
+					ev_start = next_cal;
+					i_cal ++;
+				}
+
+				ContentValues event = cal_events[i_event];
+
+    			if (event != null) {
+    	    	  	int cal_id = event.getAsInteger("calendar_id");
+    	    	  	int color = cel.getCalColor(cal_id);
+					if (ev_start >= startmillis && ev_start < endmillis)
+						// for multi-day which extends beyond range, show only the days in range
+						addEventToDisplay(event, color, true);
+					if (eventContinuesTomorrow(event)) {
+						unfinished.add(i_event);
+					}
     			}
-    			i_cal ++;
     		}
     	}
     	
