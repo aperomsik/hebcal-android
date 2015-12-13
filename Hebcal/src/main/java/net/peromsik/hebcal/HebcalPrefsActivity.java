@@ -1,5 +1,6 @@
 package net.peromsik.hebcal;
 
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
@@ -12,6 +13,8 @@ public class HebcalPrefsActivity extends PreferenceActivity
 	
 	private ListPreference location;
 	private ListPreference dialect;
+    private EditTextPreference candles;
+    private EditTextPreference havdallah;
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +38,30 @@ public class HebcalPrefsActivity extends PreferenceActivity
 
         dialect = (ListPreference) findPreference("Dialect"); 
         updateDialectSummary();
+
+        candles = (EditTextPreference) findPreference("candlesOffset");
+        updateCandlesTitle();
+        havdallah = (EditTextPreference) findPreference("havdallahMinutes");
+        updateHavdallahTitle();
     }
 
-	public void onDestroy() {
+    private void updateHavdallahTitle() {
+        String cur_val = havdallah.getText();
+        String title = getString(R.string.title_havdallah);
+        if (cur_val != null)
+          title += ": " + cur_val;
+        havdallah.setTitle(title);
+    }
+
+    private void updateCandlesTitle() {
+        String cur_val = candles.getText();
+        String title = getString(R.string.title_candles);
+        if (cur_val != null)
+            title += ": " + cur_val;
+        candles.setTitle(title);
+    }
+
+    public void onDestroy() {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this); 	
 		prefs.unregisterOnSharedPreferenceChangeListener(this);
         super.onDestroy();
@@ -49,6 +73,38 @@ public class HebcalPrefsActivity extends PreferenceActivity
     	if (key.contentEquals("Dialect")) {
     		updateDialectSummary();
     	}
+        if (key.contentEquals("candlesOffset")) {
+            String cur_val = candles.getText();
+            int minutes = 0;
+            try {
+                minutes = Integer.parseInt(cur_val);
+            } catch (NumberFormatException e) {
+
+            }
+            if (minutes < 18) {
+                SharedPreferences.Editor e = prefs.edit();
+                e.remove(key);
+                e.commit();
+                candles.setText("18");
+            }
+            updateCandlesTitle();
+        }
+        if (key.contentEquals("havdallahMinutes")) {
+            String cur_val = havdallah.getText();
+            int minutes = 0;
+            try {
+                minutes = Integer.parseInt(cur_val);
+            } catch (NumberFormatException e) {
+
+            }
+            if (minutes < 42) {
+                SharedPreferences.Editor e = prefs.edit();
+                e.remove(key);
+                e.commit();
+                havdallah.setText("42");
+            }
+            updateHavdallahTitle();
+        }
     }
     
     private void updateDialectSummary() {

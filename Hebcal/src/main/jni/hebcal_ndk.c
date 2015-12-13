@@ -68,7 +68,9 @@ JNIEXPORT void JNICALL Java_net_peromsik_hebcal_HebcalNativeLoader_hebcal_1range
   clean_events();
 }
 
-JNIEXPORT void JNICALL Java_net_peromsik_hebcal_HebcalNativeLoader_hebcal_1set_1prefs (JNIEnv *env, jobject jobj, jboolean daf, jboolean sunrise, jboolean sunset) {
+JNIEXPORT void JNICALL Java_net_peromsik_hebcal_HebcalNativeLoader_hebcal_1set_1prefs (JNIEnv *env, jobject jobj, jboolean daf,
+                                                                                       jboolean sunrise, jboolean sunset,
+                                                                                       jint candles_offset, jint havdallah_offset) {
 
   dafYomi_sw = (int)daf;
   hca_week_zemanim = 0;
@@ -76,6 +78,11 @@ JNIEXPORT void JNICALL Java_net_peromsik_hebcal_HebcalNativeLoader_hebcal_1set_1
     hca_week_zemanim |= ZMAN_SUNRISE;
   if (sunset)
     hca_week_zemanim |= ZMAN_SUNSET;
+
+  if (candles_offset >= 18)
+    light_offset = -candles_offset;
+  if (havdallah_offset >= 42)
+    havdalah_minutes = havdallah_offset;
 }
 
 

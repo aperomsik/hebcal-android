@@ -21,7 +21,7 @@ JNIEXPORT void JNICALL Java_net_peromsik_hebcal_HebcalNativeLoader_hebcal_1set_1
  * Signature: (ZZZ)V
  */
 JNIEXPORT void JNICALL Java_net_peromsik_hebcal_HebcalNativeLoader_hebcal_1set_1prefs
-  (JNIEnv *, jobject, jboolean, jboolean, jboolean);
+  (JNIEnv *, jobject, jboolean, jboolean, jboolean, jint, jint);
 
 /*
  * Class:     net_peromsik_hebcal_HebcalNativeLoader

@@ -10,6 +10,8 @@
 <string name="title_showSunrise">Sunrise</string>
 <string name="title_showSunset">Sunset</string>
 <string name="title_dialect">Hebcal Dialect</string>
+<string name="title_candles">Candles</string>
+<string name="title_havdallah">Havdallah</string>
 <string name="title_zmanim_prefs_category">Zemanim</string>
 <string name="title_Location">Location</string>
 <string name="title_hebcal_prefs_category">Hebcal Settings</string>

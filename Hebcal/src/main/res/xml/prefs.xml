@@ -22,7 +22,11 @@
            <CheckBoxPreference
                 android:key="showSunset"
                 android:title="@string/title_showSunset" />
-            
+           <EditTextPreference android:key="candlesOffset" android:inputType="number"
+               android:title="@string/title_candles" android:summary="Minutes before sunset (minimum 18)" />
+        <EditTextPreference android:key="havdallahMinutes" android:inputType="number"
+            android:title="@string/title_havdallah" android:summary="Minutes after sunset (minimum 42)"
+            />
     </PreferenceCategory>
                 
 </PreferenceScreen>

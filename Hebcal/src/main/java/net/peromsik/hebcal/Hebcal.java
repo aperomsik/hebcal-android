@@ -109,8 +109,28 @@ public class Hebcal extends AppCompatActivity {
             String dialect = prefs.getString("Dialect", "a");
             String native_cur_city = nl.getCurCity();
             String pref_cur_city = prefs.getString("Location", native_cur_city);
-            
-            nl.hebcal_set_prefs(daf_sw, sunrise_sw, sunset_sw);
+			String prefs_candles = prefs.getString("candlesOffset", "18");
+			String prefs_havdallah = prefs.getString("havdallahMinutes", "42");
+
+			int candles_offset = 18;
+			int havdallah_offset = 42;
+
+			if (prefs_candles != null) {
+				try {
+					candles_offset = Integer.parseInt(prefs_candles);
+				} catch ( NumberFormatException nfe ) {
+					candles_offset = 18;
+				}
+			}
+			if (prefs_havdallah != null) {
+				try {
+					havdallah_offset = Integer.parseInt(prefs_havdallah);
+				} catch ( NumberFormatException nfe ) {
+					havdallah_offset = 42;
+				}
+			}
+
+			nl.hebcal_set_prefs(daf_sw, sunrise_sw, sunset_sw, candles_offset, havdallah_offset);
             if (pref_cur_city != null)
                nl.hebcal_localize_to_city(pref_cur_city);
         	nl.hebcal_set_dialect(dialect);

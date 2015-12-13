@@ -16,7 +16,8 @@ public class HebcalNativeLoader  {
 
   public native void hebcal_set_date( int mm, int dd, int yy );
   
-  public native void hebcal_set_prefs( boolean daf, boolean sunrise, boolean sunset);
+  public native void hebcal_set_prefs( boolean daf, boolean sunrise, boolean sunset,
+									   int candles_offset, int havdallah_offset );
   
   public native void hebcal_range_events(int num_days);
 
